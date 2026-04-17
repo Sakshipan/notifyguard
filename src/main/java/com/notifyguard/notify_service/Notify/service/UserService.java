@@ -3,6 +3,7 @@ package com.notifyguard.notify_service.Notify.service;
 import com.notifyguard.notify_service.Notify.Config.PasswordConfig;
 import com.notifyguard.notify_service.Notify.Dtos.RequestDto.RegisterRequestDto;
 import com.notifyguard.notify_service.Notify.Dtos.ResponseDto.RegisterResponseDto;
+import com.notifyguard.notify_service.Notify.entity.Role;
 import com.notifyguard.notify_service.Notify.entity.User;
 import com.notifyguard.notify_service.Notify.repository.UserRepository;
 import lombok.*;
@@ -29,10 +30,22 @@ public RegisterResponseDto registerUser(RegisterRequestDto registerRequestDto){
         user1.setQuietHoursEnd(registerRequestDto.getQuietHoursEnd());
         user1.setPreferredTimezone(registerRequestDto.getPreferredTimezone());
 user1.setPassword(passwordEncoder.encode(registerRequestDto.getPassword()));
+user1.setRole(Role.USER);
 userRepository.save(user1);
 RegisterResponseDto registerResponseDto=RegisterResponseDto.builder().id(user1.getId()).age(user1.getAge()).name(user1.getName()).email(user1.getEmail())
         .phoneNumber(user1.getPhoneNumber()).quietHoursEnd(user1.getQuietHoursEnd()).quietHoursStart(user1.getQuietHoursStart()).build();
 return registerResponseDto;
+    }
+
+    public User validateUser(String email, String password){
+        User user= userRepository.findByEmail(email).orElseThrow(()->new RuntimeException("user not found"));
+
+        if(!passwordEncoder.matches(password,user.getPassword())){
+            throw new RuntimeException("wrong password");
+        }else{
+            return user;
+        }
+
     }
 }
 
