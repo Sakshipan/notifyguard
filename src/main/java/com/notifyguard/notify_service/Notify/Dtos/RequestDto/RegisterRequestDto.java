@@ -33,4 +33,17 @@ private String Password;
 
     private LocalTime quietHoursEnd;
     private String preferredTimezone ;
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class LoginDto {
+
+        @Email
+        @NotBlank
+        private String email;
+
+        @NotBlank
+        private String Password;
+    }
 }

@@ -18,6 +18,10 @@ public class User {
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role ;
+
     @Column(name ="age", nullable = false)
     private Integer age;
 
