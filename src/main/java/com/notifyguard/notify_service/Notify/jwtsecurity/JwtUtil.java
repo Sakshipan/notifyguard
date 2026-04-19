@@ -28,7 +28,7 @@ public class JwtUtil {
     public String generateToken(User user){
         Map<String,Object> claims=new HashMap<>();
         claims.put("user id",user.getId());
-        //claims.put("role",user.getRole().name());
+        claims.put("role",user.getRole().name());
         return Jwts.builder().setClaims(claims).setSubject(user.getEmail())
                 .setExpiration(new Date(System.currentTimeMillis()+expiration))
                 .setIssuedAt(new Date(System.currentTimeMillis())).
@@ -44,9 +44,9 @@ public class JwtUtil {
     public String extractEmail(String token){
         return extractAllClaims(token).getSubject();
     }
-//    public String extractRole(String token){
-//        return extractAllClaims(token).get("role", String.class);
-//    }
+    public String extractRole(String token){
+        return extractAllClaims(token).get("role", String.class);
+    }
     public boolean isTokenExpired(String token){
         return extractAllClaims(token).getExpiration().before(new Date());
 
