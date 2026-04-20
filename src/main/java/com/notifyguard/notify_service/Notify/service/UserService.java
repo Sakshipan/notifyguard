@@ -12,36 +12,52 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-public RegisterResponseDto registerUser(RegisterRequestDto registerRequestDto){
+    private RegisterResponseDto createUserWithRole(RegisterRequestDto request, Role role) {
 
-    // cleaner approach
-    if(userRepository.existsByEmail(registerRequestDto.getEmail())){
-        throw new RuntimeException("user already exists");
-    }
-        User user1=new User();
-        user1.setAge(registerRequestDto.getAge());
-        user1.setName(registerRequestDto.getName());
-        user1.setEmail(registerRequestDto.getEmail());
-        user1.setPhoneNumber(registerRequestDto.getPhoneNumber());
-        user1.setQuietHoursStart(registerRequestDto.getQuietHoursStart());
-        user1.setQuietHoursEnd(registerRequestDto.getQuietHoursEnd());
-        user1.setPreferredTimezone(registerRequestDto.getPreferredTimezone());
-    // these four lines are still not there
-    user1.setEmailEnabled(true);
-    user1.setSmsEnabled(true);
-    user1.setPushEnabled(true);
-    user1.setWebhookEnabled(false);
-user1.setPassword(passwordEncoder.encode(registerRequestDto.getPassword()));
-user1.setRole(Role.USER);
-userRepository.save(user1);
-RegisterResponseDto registerResponseDto=RegisterResponseDto.builder().id(user1.getId()).age(user1.getAge()).name(user1.getName()).email(user1.getEmail())
-        .phoneNumber(user1.getPhoneNumber()).quietHoursEnd(user1.getQuietHoursEnd()).quietHoursStart(user1.getQuietHoursStart()).build();
-return registerResponseDto;
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new RuntimeException("User already exists");
+        }
+
+        User user = new User();
+
+        user.setAge(request.getAge());
+        user.setName(request.getName());
+        user.setEmail(request.getEmail());
+        user.setPhoneNumber(request.getPhoneNumber());
+
+        user.setQuietHoursStart(request.getQuietHoursStart());
+        user.setQuietHoursEnd(request.getQuietHoursEnd());
+        user.setPreferredTimezone(request.getPreferredTimezone());
+
+        // default notification preferences
+        user.setEmailEnabled(true);
+        user.setSmsEnabled(true);
+        user.setPushEnabled(true);
+        user.setWebhookEnabled(false);
+
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+
+        // Dynamic role
+        user.setRole(role);
+
+        userRepository.save(user);
+
+        return RegisterResponseDto.builder()
+                .id(user.getId())
+                .age(user.getAge())
+                .name(user.getName())
+                .email(user.getEmail())
+                .phoneNumber(user.getPhoneNumber())
+                .quietHoursStart(user.getQuietHoursStart())
+                .quietHoursEnd(user.getQuietHoursEnd())
+                .build();
     }
 
     public User validateUser(String email, String password){
@@ -62,12 +78,23 @@ return registerResponseDto;
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
+    public RegisterResponseDto registerUser(RegisterRequestDto request) {
+        return createUserWithRole(request, Role.USER);
+    }
+
     public RegisterResponseDto getMyProfile(){
         User user=getCurrentUser();
         RegisterResponseDto registerResponseDto=RegisterResponseDto.builder().id(user.getId()).age(user.getAge()).name(user.getName()).email(user.getEmail())
                 .phoneNumber(user.getPhoneNumber()).quietHoursEnd(user.getQuietHoursEnd()).quietHoursStart(user.getQuietHoursStart()).build();
         return registerResponseDto;
 
+    }
+    public RegisterResponseDto createAdmin(RegisterRequestDto request) {
+        return createUserWithRole(request, Role.ADMIN);
+    }
+
+    public RegisterResponseDto createAuditor(RegisterRequestDto request) {
+        return createUserWithRole(request, Role.AUDITOR);
     }
     public RegisterResponseDto updateMyProfile(UpdateMyProfileDto profileDto){
     User user = getCurrentUser();
@@ -89,6 +116,49 @@ return registerResponseDto;
         User user = getCurrentUser();
 
         userRepository.delete(user);
+    }
+
+    //findAllUser Admin only
+    public List<RegisterResponseDto> getAllUsers() {
+
+        return userRepository.findAll()
+                .stream()
+                .map(user -> RegisterResponseDto.builder()
+                        .id(user.getId())
+                        .name(user.getName())
+                        .age(user.getAge())
+                        .email(user.getEmail())
+                        .phoneNumber(user.getPhoneNumber())
+                        .quietHoursStart(user.getQuietHoursStart())
+                        .quietHoursEnd(user.getQuietHoursEnd())
+                        .build())
+                .toList();
+    }
+// admin
+    public RegisterResponseDto getUserById(String id) {
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return RegisterResponseDto.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .age(user.getAge())
+                .email(user.getEmail())
+                .phoneNumber(user.getPhoneNumber())
+                .quietHoursStart(user.getQuietHoursStart())
+                .quietHoursEnd(user.getQuietHoursEnd())
+                .build();
+    }
+//admin
+    public String deleteUserById(String id) {
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        userRepository.delete(user);
+
+        return "User deleted successfully";
     }
 }
 
