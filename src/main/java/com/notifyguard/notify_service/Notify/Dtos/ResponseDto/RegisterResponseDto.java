@@ -28,4 +28,6 @@ public class RegisterResponseDto {
 
 
     private LocalTime quietHoursEnd;
+
+
 }
