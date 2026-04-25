@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "anomaly_alerts")
-@Getter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -30,6 +30,12 @@ public class AnomalyAlert {
     @Column(name = "ai_explanation", columnDefinition = "TEXT")
     private String aiExplanation;
 
+    @Column(name = "severity")
+    private String severity;
+
+    @Column(name = "resolved", nullable = false)
+    private boolean resolved = false;
+
     @Column(name = "triggered_at", updatable = false, nullable = false)
     private LocalDateTime triggeredAt;
 
@@ -38,3 +44,6 @@ public class AnomalyAlert {
         triggeredAt = LocalDateTime.now();
     }
 }
+
+
+

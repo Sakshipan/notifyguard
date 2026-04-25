@@ -12,8 +12,16 @@ import java.util.List;
 public interface AnomalyAlertRepository extends JpaRepository<AnomalyAlert, String> {
 
 
+        List<AnomalyAlert> findByActorId(String actorId);
+
+        List<AnomalyAlert> findByResolvedFalse();
+
+        List<AnomalyAlert> findByTriggeredAtAfter(LocalDateTime after);
+
+       // List<AnomalyAlert> findByCampaignId(String campaignId);
+    }
 
 
-}
+
 
 

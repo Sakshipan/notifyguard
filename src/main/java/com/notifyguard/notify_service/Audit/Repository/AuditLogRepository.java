@@ -15,14 +15,14 @@ import java.util.List;
         //findByCreatedAtBetween
         //countByActorIdAndCreatedAtAfter
 
-       /* List<AuditLog> findByActorId(String actorId);
+       List<AuditLog> findByActorId(String actorId);
 
         List<AuditLog> findByEventType(AuditLog.EventType eventType);
 
         List<AuditLog> findByResourceId(String resourceId);
 
         List<AuditLog>findByCreatedAtBetween(LocalDateTime from, LocalDateTime to);
-        long countByActorIdAndCreatedAtAfter( String actorId, LocalDateTime after);*/
+        long countByActorIdAndCreatedAtAfter( String actorId, LocalDateTime after);
 
 
 

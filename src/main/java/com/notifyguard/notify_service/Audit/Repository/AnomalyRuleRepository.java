@@ -8,5 +8,5 @@ import java.util.List;
 @Repository
 public interface AnomalyRuleRepository extends JpaRepository<AnomalyRule, String> {
 
-  //  List<AnomalyRule> findByEnabledTrue();
+    List<AnomalyRule> findByEnabledTrue();
 }
