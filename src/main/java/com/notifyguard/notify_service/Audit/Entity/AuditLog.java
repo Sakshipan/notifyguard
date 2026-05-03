@@ -54,6 +54,7 @@ public class AuditLog {
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
+        eventId = java.util.UUID.randomUUID().toString();
     }
 
     public enum EventType {
@@ -68,6 +69,8 @@ public class AuditLog {
         USER_OPT_IN,
         TEMPLATE_CREATED,
         TEMPLATE_UPDATED,
+
+        CAMPAIGN_UPDATED,
         ANOMALY_DETECTED
     }
 
