@@ -21,7 +21,9 @@ public class SecurityConfig {
         http.csrf(csrf->csrf.disable()).sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
         ).authorizeHttpRequests(auth->auth.
-                requestMatchers("/user/register","/user/login")
+                requestMatchers("/user/register","/user/login",  "/swagger-ui/**",
+                        "/v3/api-docs/**",
+                        "/swagger-ui.html")
 
 
 //                        "/swagger-ui/**","/v3/api-docs/**")
