@@ -7,6 +7,7 @@ import com.notifyguard.notify_service.Notify.Dtos.ResponseDto.RegisterResponseDt
 import com.notifyguard.notify_service.Notify.entity.Role;
 import com.notifyguard.notify_service.Notify.entity.User;
 import com.notifyguard.notify_service.Notify.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.*;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -40,7 +41,7 @@ public class UserService {
         user.setEmailEnabled(true);
         user.setSmsEnabled(true);
         user.setPushEnabled(true);
-        user.setWebhookEnabled(false);
+        user.setWhatsappEnabled(false);
 
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
@@ -151,6 +152,7 @@ public class UserService {
                 .build();
     }
 //admin
+    @Transactional
     public String deleteUserById(String id) {
 
         User user = userRepository.findById(id)

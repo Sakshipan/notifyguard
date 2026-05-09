@@ -7,6 +7,7 @@ import com.notifyguard.notify_service.Audit.Service.AnomalyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,12 +20,14 @@ public class AnomalyController {
     private final AnomalyService anomalyService;
 
     @PostMapping("/rules")
+    @PreAuthorize("hasAnyRole('ADMIN', 'AUDITOR')")
     public ResponseEntity<AnomalyRule> createRule(@RequestBody AnomalyRuleRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(anomalyService.createRule(request));
     }
 
     @GetMapping("/alerts")
+    @PreAuthorize("hasAnyRole('ADMIN', 'AUDITOR')")
     public ResponseEntity<List<AnomalyAlertResponse>> getAlerts() {
         return ResponseEntity.ok(anomalyService.getAlerts());
     }

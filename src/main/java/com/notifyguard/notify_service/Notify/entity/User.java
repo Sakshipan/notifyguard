@@ -50,7 +50,7 @@ public class User {
     private boolean pushEnabled = true;
 
     @Column(name = "webhook_enabled", nullable = false)
-    private boolean webhookEnabled = false;
+    private boolean whatsappEnabled = false;
 
     @Column(name= "timezone")
     private String preferredTimezone = "Asia/Kolkata";
