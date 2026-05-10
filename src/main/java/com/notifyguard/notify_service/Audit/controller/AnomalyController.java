@@ -2,7 +2,7 @@ package com.notifyguard.notify_service.Audit.controller;
 
 import com.notifyguard.notify_service.Audit.Dtos.AnomalyAlertResponse;
 import com.notifyguard.notify_service.Audit.Dtos.AnomalyRuleRequest;
-import com.notifyguard.notify_service.Audit.Entity.AnomalyRule;
+import com.notifyguard.notify_service.Audit.Dtos.AnomalyRuleResponse;
 import com.notifyguard.notify_service.Audit.Service.AnomalyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,7 +21,7 @@ public class AnomalyController {
 
     @PostMapping("/rules")
     @PreAuthorize("hasAnyRole('ADMIN', 'AUDITOR')")
-    public ResponseEntity<AnomalyRule> createRule(@RequestBody AnomalyRuleRequest request) {
+    public ResponseEntity<AnomalyRuleResponse> createRule(@RequestBody AnomalyRuleRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(anomalyService.createRule(request));
     }

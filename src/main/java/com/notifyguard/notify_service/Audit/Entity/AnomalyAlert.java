@@ -25,7 +25,7 @@ public class AnomalyAlert {
     private String actorId;
 
     @Column(name = "triggered_count", updatable = false)
-    private int triggeredCount;
+    private Integer triggeredCount;
 
     @Column(name = "ai_explanation", columnDefinition = "TEXT")
     private String aiExplanation;

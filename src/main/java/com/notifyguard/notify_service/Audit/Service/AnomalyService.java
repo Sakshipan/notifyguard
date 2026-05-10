@@ -1,8 +1,8 @@
-
 package com.notifyguard.notify_service.Audit.Service;
 
 import com.notifyguard.notify_service.Audit.Dtos.AnomalyAlertResponse;
 import com.notifyguard.notify_service.Audit.Dtos.AnomalyRuleRequest;
+import com.notifyguard.notify_service.Audit.Dtos.AnomalyRuleResponse;
 import com.notifyguard.notify_service.Audit.Entity.AnomalyAlert;
 import com.notifyguard.notify_service.Audit.Entity.AnomalyRule;
 import com.notifyguard.notify_service.Audit.Repository.AnomalyAlertRepository;
@@ -22,9 +22,8 @@ public class AnomalyService {
     private final AnomalyRuleRepository anomalyRuleRepository;
     private final AnomalyAlertRepository anomalyAlertRepository;
 
-
-    // creates a new anomaly rule
-    public AnomalyRule createRule(AnomalyRuleRequest request) {
+    // creates a new anomaly rule and returns DTO
+    public AnomalyRuleResponse createRule(AnomalyRuleRequest request) {
         AnomalyRule rule = AnomalyRule.builder()
                 .name(request.getName())
                 .description(request.getDescription())
@@ -34,7 +33,17 @@ public class AnomalyService {
                 .enabled(true)
                 .build();
 
-        return anomalyRuleRepository.save(rule);
+        AnomalyRule saved = anomalyRuleRepository.save(rule);
+
+        return AnomalyRuleResponse.builder()
+                .id(saved.getId())
+                .name(saved.getName())
+                .description(saved.getDescription())
+                .eventType(saved.getEventType())
+                .thresholdCount(saved.getThresholdCount())
+                .windowSeconds(saved.getWindowSeconds())
+                .enabled(saved.isEnabled())
+                .build();
     }
 
     // returns all unresolved alerts

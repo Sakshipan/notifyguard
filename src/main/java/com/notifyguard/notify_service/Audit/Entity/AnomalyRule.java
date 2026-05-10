@@ -27,11 +27,10 @@ public class AnomalyRule {
     private String eventType;
 
     @Column(name = "threshold_count", nullable = false)
-    private int thresholdCount;
+    private Integer thresholdCount;
 
     @Column(name = "window_seconds", nullable = false)
-    private int windowSeconds;
-
+    private Integer windowSeconds;
     @Column(nullable = false)
     private boolean enabled = true;
 
