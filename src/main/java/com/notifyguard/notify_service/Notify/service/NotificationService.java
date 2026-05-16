@@ -5,6 +5,7 @@ import com.notifyguard.notify_service.Audit.Service.AuditService;
 import com.notifyguard.notify_service.Notify.Dtos.RequestDto.NotificationRequestDto;
 import com.notifyguard.notify_service.Notify.Dtos.ResponseDto.NotificationResponseDto;
 import com.notifyguard.notify_service.Notify.entity.*;
+import com.notifyguard.notify_service.Notify.publisher.NotificationPublisher;
 import com.notifyguard.notify_service.Notify.repository.CampaignRepository;
 import com.notifyguard.notify_service.Notify.repository.CampaignUserRepository;
 import com.notifyguard.notify_service.Notify.repository.NotificationRepository;
@@ -28,6 +29,7 @@ public class NotificationService {
     private final AuditService auditService;
     private final UserRepository userRepository;
     private final NotificationRepository notificationRepository;
+    private final NotificationPublisher notificationPublisher;
 
     public NotificationResponseDto sendNotification(NotificationRequestDto request){
         Campaign campaign = campaignRepository.findById(request.getCampaignId())
@@ -68,6 +70,7 @@ public class NotificationService {
                         + ", userId=" + user.getId())
                 .build();
         auditService.log(auditLog);
+        notificationPublisher.publish(saved);
 
         return mapToResponse(saved);
     }
