@@ -6,6 +6,7 @@ import com.notifyguard.notify_service.Notify.repository.CampaignRepository;
 import com.notifyguard.notify_service.Notify.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,7 +21,9 @@ public class DashboardService {
     private final NotificationRepository notificationRepository;
 
     // GET /api/dashboard/campaign/{id}/summary
+    @Cacheable(value = "campaignSummary", key = "#campaignId")
     public CampaignSummaryResponse getCampaignSummary(String campaignId) {
+        log.info("Fetching campaign summary from DB for id: {}", campaignId);
         var campaign = campaignRepository.findById(campaignId)
                 .orElseThrow(() -> new RuntimeException("Campaign not found"));
 
@@ -43,7 +46,9 @@ public class DashboardService {
     }
 
     // GET /api/dashboard/campaign/{id}/users
+    @Cacheable(value = "campaignUsers", key = "#campaignId")
     public List<UserCampaignBreakdownResponse> getUsersInCampaignBreakdown(String campaignId) {
+        log.info("Fetching campaign users from DB for id: {}", campaignId);
         List<Notification> notifications = notificationRepository.findByCampaignId(campaignId);
 
         return notifications.stream()
@@ -64,7 +69,9 @@ public class DashboardService {
     }
 
     // GET /api/dashboard/channel-performance
+    @Cacheable(value = "channelPerformance")
     public List<ChannelPerformanceResponse> getChannelPerformance() {
+        log.info("Fetching channel performance from DB");
         List<Notification> all = notificationRepository.findAll();
 
         return all.stream()
@@ -92,7 +99,9 @@ public class DashboardService {
     }
 
     // GET /api/dashboard/users/{userId}/history
+    @Cacheable(value = "userHistory", key = "#userId")
     public List<UserNotificationHistoryResponse> getUserNotificationHistory(String userId) {
+        log.info("Fetching user notification history from DB for userId: {}", userId);
         return notificationRepository.findByUserId(userId)
                 .stream()
                 .map(n -> UserNotificationHistoryResponse.builder()
@@ -107,7 +116,9 @@ public class DashboardService {
     }
 
     // GET /api/dashboard/unresponsive-users
+    @Cacheable(value = "unresponsiveUsers")
     public List<UserCampaignBreakdownResponse> getUnresponsiveUsers() {
+        log.info("Fetching unresponsive users from DB");
         return notificationRepository.findAll()
                 .stream()
                 .filter(n -> n.getStatus() != null &&
