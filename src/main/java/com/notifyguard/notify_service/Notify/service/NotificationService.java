@@ -4,6 +4,7 @@ import com.notifyguard.notify_service.Audit.Entity.AuditLog;
 import com.notifyguard.notify_service.Audit.Service.AuditService;
 import com.notifyguard.notify_service.Notify.Dtos.RequestDto.NotificationRequestDto;
 import com.notifyguard.notify_service.Notify.Dtos.ResponseDto.NotificationResponseDto;
+import com.notifyguard.notify_service.Notify.Redis.UserBehaviorTracker;
 import com.notifyguard.notify_service.Notify.entity.*;
 import com.notifyguard.notify_service.Notify.publisher.NotificationPublisher;
 import com.notifyguard.notify_service.Notify.repository.CampaignRepository;
@@ -30,6 +31,7 @@ public class NotificationService {
     private final UserRepository userRepository;
     private final NotificationRepository notificationRepository;
     private final NotificationPublisher notificationPublisher;
+    private final UserBehaviorTracker userBehaviorTracker;
 
     public NotificationResponseDto sendNotification(NotificationRequestDto request){
         Campaign campaign = campaignRepository.findById(request.getCampaignId())
@@ -71,6 +73,9 @@ public class NotificationService {
                 .build();
         auditService.log(auditLog);
         notificationPublisher.publish(saved);
+        userBehaviorTracker.recordSent(
+                user.getId(),
+                saved.getChannel());
 
         return mapToResponse(saved);
     }
@@ -215,6 +220,14 @@ public class NotificationService {
 
         campaignUser.setMessagesResponded(
                 campaignUser.getMessagesResponded() + 1);
+        campaignUserRepository.save(campaignUser);
+        userBehaviorTracker.recordResponse(
+                userId,
+                notification.getChannel());
+        String bestChannel = userBehaviorTracker
+                .getBestChannel(userId);
+        campaignUser.setBestChannel(
+                ChannelType.valueOf(bestChannel));
         campaignUserRepository.save(campaignUser);
 
         // TODO: update Redis behavior data in Phase 11
